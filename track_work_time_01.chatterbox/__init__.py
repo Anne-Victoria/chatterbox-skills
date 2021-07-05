@@ -113,18 +113,22 @@ class Track_work_time_01_chatterboxSkill(ChatterboxSkill):
             # self.speak(str(entry[1]), wait=True)
         self.speak("you worked", wait=True)
         if not (minutesWorked // 60) == 0:
-            self.speak(str(minutesWorked // 60), wait=True)
+            temp = str(minutesWorked // 60) + " "
+            self.speak(temp, wait=True)
             self.speak("hours", wait=True)
-        self.speak(str(minutesWorked % 60), wait=True)
+        temp = str(minutesWorked % 60) + " "
+        self.speak(temp, wait=True)
         if minutesWorked % 60 == 0:
             self.speak("zero", wait=True)
         self.speak("minutes", wait=True)
 
         self.speak("you were on break", wait=True)
         if not (minutesOnBreak // 60) == 0:
-            self.speak(str(minutesOnBreak // 60), wait=True)
+            temp = str(minutesOnBreak // 60) + " "
+            self.speak(temp, wait=True)
             self.speak("hours", wait=True)
-        self.speak(str(minutesOnBreak % 60), wait=True)
+        temp = str(minutesOnBreak % 60) + " "
+        self.speak(temp, wait=True)
         if  minutesOnBreak % 60 == 0:
             self.speak("zero", wait=True)
         self.speak("minutes", wait=True)
@@ -196,11 +200,11 @@ class Track_work_time_01_chatterboxSkill(ChatterboxSkill):
                 else:
                     self.speak_dialog("you were on break for", wait=True)
                 if not hourPart == 0:
-                    self.speak(hourPart, wait=True)
+                    temp = str(hourPart) + " "
+                    self.speak(temp, wait=True)
                     self.speak("hours and", wait=True)
-                self.speak(minutePart, wait=True)
-                if minutePart == 0:
-                    self.speak("zero", wait=True)
+                temp = str(minutePart) + " "
+                self.speak(temp, wait=True)
                 self.speak("minutes", wait=True)
                 
         self._in_loop = False
