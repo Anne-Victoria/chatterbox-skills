@@ -89,15 +89,46 @@ class Track_work_time_01_chatterboxSkill(ChatterboxSkill):
         self.speak_dialog("Stopping the time tracking", wait=True)
         currentDateTime = datetime.datetime.now(tz=viennaTZ) 
         timesheet.append([currentDateTime, "end"])
-        self.speak_dialog("These are your entries", wait=True)
+        minutesWorked = 0
+        minutesOnBreak = 0
         self._in_loop = True
         i_end = float(len(timesheet))
+        # note: i starts at 1
         for i in (1 <= i_end) and upRange(1, i_end, 1) or downRange(1, i_end, 1):
             if not self._in_loop:
                 return
             entry = timesheet[int(i - 1)]
-            self.speak(str(entry[0]), wait=True)
-            self.speak(str((entry[1])), wait=True)
+            entryTime = entry[0]
+            entryType = entry[1]
+            if not i == 1:
+                prevEntry = timesheet[int(i - 2)]
+                prevTime = prevEntry[0]
+                prevType = prevEntry[1]
+                diff = entryTime - prevTime
+                if prevType == "work":
+                    minutesWorked = minutesWorked + int(diff.seconds / 60)
+                else:
+                    minutesOnBreak = minutesOnBreak + int(diff.seconds / 60)
+            # self.speak(str(entry[0]), wait=True)
+            # self.speak(str(entry[1]), wait=True)
+        self.speak("you worked", wait=True)
+        if not (minutesWorked // 60) == 0:
+            self.speak(str(minutesWorked // 60), wait=True)
+            self.speak("hours", wait=True)
+        self.speak(str(minutesWorked % 60), wait=True)
+        if minutesWorked % 60 == 0:
+            self.speak("zero", wait=True)
+        self.speak("minutes", wait=True)
+
+        self.speak("you were on break", wait=True)
+        if not (minutesOnBreak // 60) == 0:
+            self.speak(str(minutesOnBreak // 60), wait=True)
+            self.speak("hours", wait=True)
+        self.speak(str(minutesOnBreak % 60), wait=True)
+        if  minutesOnBreak % 60 == 0:
+            self.speak("zero", wait=True)
+        self.speak("minutes", wait=True)
+        
         self._in_loop = False
 
     # getting current status
@@ -140,7 +171,40 @@ class Track_work_time_01_chatterboxSkill(ChatterboxSkill):
         utterance_remainder = message.utterance_remainder() or ''
         message_data = message.data
 
-        self.speak(str(timesheet), wait=True)
+        self.speak_dialog("These are your entries from today", wait=True)
+        self._in_loop = True
+        i_end = float(len(timesheet))
+        # note: i starts at 1
+        for i in (1 <= i_end) and upRange(1, i_end, 1) or downRange(1, i_end, 1):
+            if not self._in_loop:
+                return
+            entry = timesheet[int(i - 1)]
+            entryTime = entry[0]
+            entryType = entry[1]
+            if not i == 1:
+                prevEntry = timesheet[int(i - 2)]
+                prevTime = prevEntry[0]
+                prevType = prevEntry[1]
+                diff = entryTime - prevTime
+                self.speak_dialog("At", wait=True)
+                self.speak_dialog(prevTime.strftime("%H %M"), wait=True)
+                entryDuration = int(diff.seconds / 60)
+                hourPart = entryDuration // 60
+                minutePart = entryDuration % 60
+                if prevType == "work":
+                    self.speak_dialog("you worked for", wait=True)
+                else:
+                    self.speak_dialog("you were on break for", wait=True)
+                if not hourPart == 0:
+                    self.speak(hourPart, wait=True)
+                    self.speak("hours and", wait=True)
+                self.speak(minutePart, wait=True)
+                if minutePart == 0:
+                    self.speak("zero", wait=True)
+                self.speak("minutes", wait=True)
+                
+        self._in_loop = False
+
 
     # saving timesheet
     @intent_handler(IntentBuilder("intent_name37").require('save_timesheet'))
