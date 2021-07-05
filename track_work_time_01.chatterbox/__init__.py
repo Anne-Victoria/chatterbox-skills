@@ -1,4 +1,5 @@
 import datetime
+import pytz
 from chatterbox.skills.core import intent_handler
 from adapt.intent import IntentBuilder
 from chatterbox.skills.core import ChatterboxFallbackSkill
@@ -30,6 +31,8 @@ entry = None
 exampleParam = None
 i = None
 
+viennaTZ = pytz.timezone('Europe/Vienna')
+
 class Track_work_time_01_chatterboxSkill(ChatterboxSkill):
     def initialize(self):
         utterance = utterance_remainder = ''
@@ -43,8 +46,10 @@ class Track_work_time_01_chatterboxSkill(ChatterboxSkill):
         utterance_remainder = message.utterance_remainder() or ''
         message_data = message.data
 
+        print(viennaTZ)
+
         self.speak_dialog("I am starting to track your work time", wait=True)
-        currentDateTime = datetime.datetime.now() 
+        currentDateTime = datetime.datetime.now(tz=viennaTZ) 
 
         timesheet = []
         timesheet.append([currentDateTime, "work"])
@@ -58,7 +63,7 @@ class Track_work_time_01_chatterboxSkill(ChatterboxSkill):
         message_data = message.data
 
         self.speak_dialog("I am pausing the time tracking.", wait=True)
-        currentDateTime = datetime.datetime.now() 
+        currentDateTime = datetime.datetime.now(tz=viennaTZ) 
         timesheet.append([currentDateTime, "break"])
 
     # resuming work
@@ -70,7 +75,7 @@ class Track_work_time_01_chatterboxSkill(ChatterboxSkill):
         message_data = message.data
 
         self.speak_dialog("I am resuming time tracking.", wait=True)
-        currentDateTime = datetime.datetime.now() 
+        currentDateTime = datetime.datetime.now(tz=viennaTZ) 
         timesheet.append([currentDateTime, "work"])
 
     # finishing for the day
@@ -82,7 +87,7 @@ class Track_work_time_01_chatterboxSkill(ChatterboxSkill):
         message_data = message.data
 
         self.speak_dialog("Stopping the time tracking", wait=True)
-        currentDateTime = datetime.datetime.now() 
+        currentDateTime = datetime.datetime.now(tz=viennaTZ) 
         timesheet.append([currentDateTime, "end"])
         self.speak_dialog("These are your entries", wait=True)
         self._in_loop = True
